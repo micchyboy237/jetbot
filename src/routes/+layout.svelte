@@ -30,9 +30,10 @@
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
 	import i18n, { getLanguages, initI18n } from '$lib/i18n';
-	
+
 	const pathname = window.location.pathname;
 	const isChat = pathname.startsWith('/chat');
+	const isAuth = pathname.startsWith('/auth');
 
 	setContext('i18n', i18n);
 
@@ -98,7 +99,11 @@
 					USAGE_POOL.set(data['models']);
 				});
 
-				if (isChat || localStorage.token) {
+				if (isAuth) {
+					localStorage.removeItem('token');
+					localStorage.removeItem('isChat');
+					await goto('/auth');
+				} else if (isChat || localStorage.token) {
 					let authToken;
 					if (isChat) {
 						console.log('isChat');
