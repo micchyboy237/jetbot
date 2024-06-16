@@ -60,6 +60,8 @@
 	import CallOverlay from './MessageInput/CallOverlay.svelte';
 	import { error } from '@sveltejs/kit';
 
+	const isChat = localStorage.getItem('isChat') === 'true';
+
 	const i18n: Writable<i18nType> = getContext('i18n');
 
 	export let chatIdProp = '';
@@ -1309,14 +1311,16 @@
 			? 'md:max-w-[calc(100%-260px)]'
 			: ''} w-full max-w-full flex flex-col"
 	>
-		<Navbar
-			{title}
-			bind:selectedModels
-			bind:showModelSelector
-			shareEnabled={messages.length > 0}
-			{chat}
-			{initNewChat}
-		/>
+		{#if !isChat}
+			<Navbar
+				{title}
+				bind:selectedModels
+				bind:showModelSelector
+				shareEnabled={messages.length > 0}
+				{chat}
+				{initNewChat}
+			/>
+		{/if}
 
 		{#if $banners.length > 0 && messages.length === 0 && !$chatId && selectedModels.length <= 1}
 			<div

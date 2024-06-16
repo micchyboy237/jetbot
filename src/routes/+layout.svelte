@@ -6,30 +6,33 @@
 		stiffness: 0.05
 	});
 
-	import { onMount, tick, setContext } from 'svelte';
+	import { goto } from '$app/navigation';
 	import {
-		config,
-		user,
-		theme,
+		USAGE_POOL,
 		WEBUI_NAME,
+		activeUserCount,
+		config,
 		mobile,
 		socket,
-		activeUserCount,
-		USAGE_POOL
+		theme,
+		user
 	} from '$lib/stores';
-	import { goto } from '$app/navigation';
+	import { onMount, setContext, tick } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 
 	import { getBackendConfig } from '$lib/apis';
 	import { getSessionUser } from '$lib/apis/auths';
 
-	import '../tailwind.css';
 	import '../app.css';
+	import '../tailwind.css';
 
 	import 'tippy.js/dist/tippy.css';
 
-	import { WEBUI_BASE_URL, WEBUI_HOSTNAME } from '$lib/constants';
-	import i18n, { initI18n, getLanguages } from '$lib/i18n';
+	import { WEBUI_BASE_URL } from '$lib/constants';
+	import i18n, { getLanguages, initI18n } from '$lib/i18n';
+	
+	const pathname = window.location.pathname;
+	const isChat = pathname.startsWith('/chat');
 
 	setContext('i18n', i18n);
 
@@ -95,23 +98,38 @@
 					USAGE_POOL.set(data['models']);
 				});
 
-				if (localStorage.token) {
+				if (isChat || localStorage.token) {
+					let authToken;
+					if (isChat) {
+						console.log('isChat');
+						authToken =
+							'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjkzYjE1ZWI4LTJiY2QtNDJmMS1hYTRiLTFlNGQ1M2FlMjhiNyJ9.JjbDVgFjf0D8YXwoJxO3tq_xRmnY9-9r5KG64hZ8HFs';
+					} else {
+						authToken = localStorage.token;
+					}
+
 					// Get Session User Info
-					const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
+					const sessionUser = await getSessionUser(authToken).catch((error) => {
 						toast.error(error);
 						return null;
 					});
 
-					if (sessionUser) {
+					if (isChat) {
+						localStorage.setItem('token', authToken);
+						localStorage.setItem('isChat', 'true');
+						await user.set(sessionUser);
+						await goto('/');
+					} else if (sessionUser) {
 						// Save Session User to Store
 						await user.set(sessionUser);
 					} else {
 						// Redirect Invalid Session User to /auth Page
 						localStorage.removeItem('token');
+						localStorage.removeItem('isChat');
 						await goto('/auth');
 					}
 				} else {
-					await goto('/auth');
+					await goto(isChat ? '/' : '/auth');
 				}
 			}
 		} else {

@@ -7,6 +7,14 @@ KEY_FILE=.webui_secret_key
 
 PORT="${PORT:-8080}"
 HOST="${HOST:-0.0.0.0}"
+
+echo "Starting Open Web UI on port $PORT on host $HOST"
+# Echo environment variables
+echo "WEBUI_SECRET_KEY: $WEBUI_SECRET_KEY"
+echo "WEBUI_JWT_SECRET_KEY: $WEBUI_JWT_SECRET_KEY"
+echo "USE_OLLAMA_DOCKER: $USE_OLLAMA_DOCKER"
+echo "USE_CUDA_DOCKER: $USE_CUDA_DOCKER"
+
 if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
   echo "Loading WEBUI_SECRET_KEY from file, not provided as an environment variable."
 
@@ -20,12 +28,12 @@ if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
   WEBUI_SECRET_KEY=$(cat "$KEY_FILE")
 fi
 
-if [[ "${USE_OLLAMA_DOCKER,,}" == "true" ]]; then
-    echo "USE_OLLAMA is set to true, starting ollama serve."
-    ollama serve &
+if [[ "$USE_OLLAMA_DOCKER" = "true" ]]; then
+  echo "USE_OLLAMA is set to true, starting ollama serve."
+  ollama serve &
 fi
 
-if [[ "${USE_CUDA_DOCKER,,}" == "true" ]]; then
+if [[ "$USE_CUDA_DOCKER" = "true" ]]; then
   echo "CUDA is enabled, appending LD_LIBRARY_PATH to include torch/cudnn & cublas libraries."
   export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib/python3.11/site-packages/torch/lib:/usr/local/lib/python3.11/site-packages/nvidia/cudnn/lib"
 fi
@@ -55,4 +63,29 @@ if [ -n "$SPACE_ID" ]; then
   export WEBUI_URL=${SPACE_HOST}
 fi
 
-WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*'
+# Custom restart code
+running=true
+
+restart_uvicorn() {
+  while $running; do
+    WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uvicorn main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --reload --reload-dir /Users/jethroestrada/Desktop/External_Projects/GPT/ResumeChatbot/open-webui/backend
+    
+    echo "Uvicorn process stopped. Restarting..."
+    sleep 2
+  done
+}
+
+stop_uvicorn() {
+  running=false
+  # echo "Stopping Uvicorn and exiting script."
+  pkill -P $$
+}
+
+trap "running=false" SIGQUIT
+trap stop_uvicorn SIGINT SIGTERM
+trap stop_uvicorn EXIT
+
+restart_uvicorn &
+
+# Wait for background process to finish
+wait

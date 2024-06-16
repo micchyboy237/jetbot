@@ -1,0 +1,58 @@
+{
+	"outputDirectory": "build",
+	"headers": [
+		{
+			"source": "/resume.pdf",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "no-cache, no-store, must-revalidate"
+				}
+			]
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/chat",
+			"destination": "/"
+		},
+		{
+			"source": "/:path*",
+			"has": [
+				{
+					"type": "header",
+					"key": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/:path*"
+		},
+		{
+			"source": "/:path*/",
+			"has": [
+				{
+					"type": "header",
+					"key": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/:path*/"
+		},
+		{
+			"source": "/static/:path*",
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/static/:path*"
+		},
+		{
+			"source": "/c/:path*",
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/c/:path*"
+		},
+		{
+			"source": "/c/:path*/",
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/c/:path*/"
+		},
+		{
+			"source": "/_app/:path*",
+			"destination": "https://brief-leading-polliwog.ngrok-free.app/_app/:path*"
+		}
+	]
+}

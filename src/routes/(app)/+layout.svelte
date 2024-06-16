@@ -37,6 +37,8 @@
 	import ChangelogModal from '$lib/components/ChangelogModal.svelte';
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 
+	const isChat = localStorage.getItem('isChat') === 'true';
+
 	const i18n = getContext('i18n');
 
 	let loaded = false;
@@ -241,7 +243,9 @@
 				</div>
 			{/if}
 
-			<Sidebar />
+			{#if !isChat}
+				<Sidebar />
+			{/if}
 			<slot />
 		{/if}
 	</div>
