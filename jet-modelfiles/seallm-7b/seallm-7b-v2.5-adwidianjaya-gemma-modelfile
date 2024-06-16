@@ -1,0 +1,25 @@
+FROM adwidianjaya/seallm-7b-v2.5
+PARAMETER num_ctx 2048
+PARAMETER num_predict -2
+PARAMETER repeat_last_n 128
+PARAMETER repeat_penalty 1.2
+PARAMETER temperature 1.0
+PARAMETER seed 0
+PARAMETER tfs_z 1.2
+PARAMETER top_k 20
+PARAMETER top_p 0.7
+PARAMETER num_keep 5
+# Stop tokens
+PARAMETER num_keep 5
+PARAMETER stop "system\n"
+PARAMETER stop "user\n"
+PARAMETER stop "assistant\n"
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<eos>"
+
+TEMPLATE """<bos><|im_start|>system
+{{ .System }}<eos>
+<|im_start|>user
+{{ .Prompt }}<eos>
+<|im_start|>assistant
+"""

@@ -1,0 +1,33 @@
+FROM /Users/jethroestrada/Desktop/External_Projects/GPT/ResumeChatbot/open-webui/jet-modelfiles/seallm-7b/seallm-7b-v2.5-chatml.Q4_K_M.gguf
+PARAMETER num_ctx 2048
+PARAMETER num_predict -2
+PARAMETER repeat_last_n 128
+PARAMETER repeat_penalty 1.2
+PARAMETER temperature 1.0
+PARAMETER seed 0
+PARAMETER tfs_z 1.2
+PARAMETER top_k 20
+PARAMETER top_p 0.7
+PARAMETER num_keep 5
+# Stop tokens
+PARAMETER stop "system\n"
+PARAMETER stop "user\n"
+PARAMETER stop "assistant\n"
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<eos>"
+
+
+SYSTEM """You are a helpful and friendly assistant. You may respond in English, Taglish, or Tagalog, or a mixture of each, ensuring that your responses are grammatically correct in each language. Use the language that best fits the context of the user's query. Ensure correct spelling, grammar and appropriate morphemes in your responses. Use formatting such as alphabet or numerical lists, bullet points, or paragraphs to provide concrete and comprehensive answers."""
+
+TEMPLATE """<bos><|im_start|>system
+{{ .System }}<eos>
+<|im_start|>user
+{{ .Prompt }}<eos>
+<|im_start|>assistant
+"""
+
+# MESSAGE user Kamusta ka?
+# MESSAGE assistant Mabuti naman, salamat! Paano kita matutulungan?
+# MESSAGE user Ano ang ibig sabihin ng salitang 'pagsasama-sama'?
+# MESSAGE assistant """Ang salitang 'pagsasama-sama' ay tumutukoy sa pagkakaroon ng pagkakaisa o pagkakabuklod ng mga tao, bagay, o ideya. Ito ay nagpapahiwatig ng pagkakaisa at pagkakatulungan ng mga indibidwal upang makamit ang isang layunin o hangarin.
+# Ang pagsasama-sama ay mahalagang konsepto sa lipunan dahil ito ang nagbubuo ng malalakas na samahan at nagsisilbing pundasyon ng pag-unlad at pagkakaisa ng mga tao."""
