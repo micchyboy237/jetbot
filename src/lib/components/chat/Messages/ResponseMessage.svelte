@@ -11,6 +11,8 @@
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, tick, getContext } from 'svelte';
 
+	const isChat = localStorage.getItem('isChat') === 'true';
+	
 	const i18n = getContext('i18n');
 
 	const dispatch = createEventDispatcher();
@@ -538,7 +540,7 @@
 								</div>
 							{/if}
 
-							{#if message.citations}
+							{#if !isChat && message.citations}
 								<div class="mt-1 mb-2 w-full flex gap-1 items-center flex-wrap">
 									{#each message.citations.reduce((acc, citation) => {
 										citation.document.forEach((document, index) => {
