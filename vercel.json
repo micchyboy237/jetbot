@@ -13,7 +13,14 @@
 	],
 	"rewrites": [
 		{
-			"source": "/chat",
+			"source": "/chat*",
+			"has": [
+				{
+					"type": "header",
+					"key": "Content-Type",
+					"value": "text/html"
+				}
+			],
 			"destination": "/"
 		},
 		{
@@ -54,5 +61,5 @@
 			"source": "/_app/:path*",
 			"destination": "https://brief-leading-polliwog.ngrok-free.app/_app/:path*"
 		}
-	],
+	]
 }
