@@ -13,14 +13,7 @@
 	],
 	"rewrites": [
 		{
-			"source": "/chat*",
-			"has": [
-				{
-					"type": "header",
-					"key": "Content-Type",
-					"value": "text/html"
-				}
-			],
+			"source": "/chat",
 			"destination": "/"
 		},
 		{
